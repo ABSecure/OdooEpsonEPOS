@@ -17,3 +17,5 @@ It also adds colour support for the U220 and other impact models.
 ## Installation
 
 Simply add the OdooEpsonEpos folder into your modules folder and activate. Any preparation printers configured to use Epson will now be printing clearer, quicker and in colour 🥳
+
+Desinged for V19 only. Untested on anything else. But the code is so basic I am sure it would be easy to get working on older versions.
