@@ -8,7 +8,7 @@
     'depends': ['point_of_sale'],
     'assets': {
         'point_of_sale._assets_pos': [
-            'pos_epson_xml_direct/static/src/js/epson.js'
+            'OdooEpsonEpos/static/src/js/epson.js'
         ],
     },
     'installable': True,
