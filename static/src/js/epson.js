@@ -63,9 +63,9 @@ patch(BasePrinter.prototype, {
                             <text color="color_1" smooth="true" dh="true" dw="true" align="center">${state}\n</text>
                             <text color="color_1" smooth="true" dh="true" dw="true" align="center">${orderName}\n</text>
                             text font="font_a" color="color_1" />
-                            <text color="color_1" dw="false" dh="false" width="1" height="1" align="left" smooth="true">${employee.childNodes[0].innerText}\n</text>
+                            <text color="color_1" dw="false" dh="false" width="1" height="1" align="left" smooth="true">${employee.childNodes[0].innerText} #${customer.split("#")[1]}\n</text>
                             <text color="color_1" dw="false" dh="false" width="1" height="1" align="left" smooth="true">${employee.childNodes[2].innerText}\n</text>
-                            <text color="color_1" dw="true" dh="false" align="left" smooth="true">${customer}\n</text>
+                            <text color="color_1" dw="true" dh="false" align="left" smooth="true">${customer.split("#")[0]}\n</text>
                             <text color="color_1" dw="true" dh="false" align="left" smooth="true">${guests}\n</text>
                             <text color="color_1" dw="false" dh="false" width="1" height="1" align="center" smooth="true">--------------------------------\n</text>
                             <text color="color_1" dw="true" dh="false" align="center" smooth="true">${course}\n</text>
@@ -76,7 +76,7 @@ patch(BasePrinter.prototype, {
                     </s:Body>
                 </s:Envelope>
             `;
-
+            posmodel.env.services.ui.block();
             try {
                 const response = await fetch(`${this.address}`,     {
                     method: 'POST',
@@ -85,7 +85,10 @@ patch(BasePrinter.prototype, {
                     signal: AbortSignal.timeout(60000)
                 });
 
-                if (!response.ok) return { successful: false };
+                if (!response.ok) {
+                    posmodel.env.services.ui.unblock();
+                    return { successful: false };
+                }
 
                 // --- NEW: PARSE PRINTER STATUS RESPONSE ---
                 const responseText = await response.text();
@@ -97,9 +100,11 @@ patch(BasePrinter.prototype, {
                 const successAttr = eposPrintElement?.getAttribute('success');
 
                 if (successAttr === 'true') {
+                    posmodel.env.services.ui.unblock();
                     return { successful: true };
                 } else {
                     const errorCode = eposPrintElement?.getAttribute('code');
+                    posmodel.env.services.ui.unblock();
                     console.error("Printer responded but failed to print. Code:", errorCode);
                     return { 
                         successful: false, 
@@ -110,6 +115,7 @@ patch(BasePrinter.prototype, {
                     };
                 }
             } catch (error) {
+                posmodel.env.services.ui.unblock();
                 console.error("Network/CORS error reaching printer:", error);
                 return { 
                     successful: false, 
