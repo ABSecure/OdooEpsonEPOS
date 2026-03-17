@@ -14,7 +14,8 @@ patch(BasePrinter.prototype, {
             // 1. Parse the HTML string into a DOM document
             const parser = new DOMParser();
             const doc = parser.parseFromString(receipt.innerHTML, 'text/html');
-            console.log(receipt.innerHTML);
+            //console.log(receipt.innerHTML);
+            if(receipt.innerHTML.includes("order_receipt.xml")) return super.printReceipt(...arguments); // This is a customer receipt. Bypass our code and use standard rendering
             // 2. Extract specific data using selectors
             const orderName = doc.querySelector('.pos-receipt-title')?.innerText || "New Order";
             const orderLines = doc.querySelectorAll('.orderline');
